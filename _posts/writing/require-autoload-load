@@ -1,0 +1,17 @@
+要被require的文件，mylibrary.rb
+
+puts "I was loaded!"
+
+class MyLibrary
+end
+
+require mylibrary时文件立即执行。
+irb(main):001:0> require 'mylibrary'
+I was loaded!
+=> true
+
+
+
+
+
+https://ruby-china.org/topics/26034

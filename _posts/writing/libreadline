@@ -1,0 +1,15 @@
+
+
+
+
+A brew update && brew upgrade brought in libreadline.7.x.dylib while automatically removing libreadline.6.x.dylib, which ruby was still relying on.
+
+
+通过如下命令解决了这个问题：
+ln -s /usr/local/opt/readline/lib/libreadline.7.0.dylib /usr/local/opt/readline/lib/libreadline.6.dylib
+
+
+
+
+https://github.com/rails/rails/issues/26658
+http://stackoverflow.com/questions/25591527/rails-console-doesnt-load-due-to-libreadline

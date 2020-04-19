@@ -1,0 +1,44 @@
+---
+layout: post
+title: git submodule
+date: 2018-03-27
+tags: git
+---
+
+### 先直接列出安装步骤
+
+拉取自模块
+cd [project_path]
+git submodule add [sub_repo]
+
+
+克隆项目的两种方法
+
+1.
+git clone --recursive [main_repo]
+
+2.
+git clone [main_repo]
+git submodule init
+git submodule update
+
+
+更新子模块
+git submodule update --remote
+git add .
+git commit -m 'fetch new submodule'
+git push
+
+
+子模块位于一个游离的HEAD状态
+git branch
+* (HEAD detached at 84769af)
+  master
+
+
+
+---
+
+## 参考资料：
+
+* [Git 工具 - 子模块](https://git-scm.com/book/zh/v2/Git-%E5%B7%A5%E5%85%B7-%E5%AD%90%E6%A8%A1%E5%9D%97)

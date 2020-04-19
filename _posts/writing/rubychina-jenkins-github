@@ -1,0 +1,189 @@
+
+# 0. 引言
+
+网上有不少集成 Jenkins 和 GitHub 的帖子，但是笔者在实践还是踩了不少坑，所以就重新总结一下。
+
+# 1. 安装 Jenkins
+
+先简要介绍一下 Jenkins 安装，详情参考 [Jenkins 官网](https://jenkins.io/download/)。
+
+* ubuntu
+
+```
+$ wget -q -O - https://pkg.jenkins.io/debian-stable/jenkins.io.key | sudo apt-key add -
+$ echo deb https://pkg.jenkins.io/debian-stable binary/ | sudo tee /etc/apt/sources.list.d/jenkins.list
+$ sudo apt-get update
+$ sudo apt-get install openjdk-11-jre
+$ sudo apt-get install jenkins
+
+# 笔者测试是跑在 docker 里的，所以 jenkins 用户需要 docker 权限
+$ usermod -aG docker jenkins
+```
+
+* docker
+
+```
+#  注：笔者是在 ubuntu 上直接安装 Jenkins，所以 docker 上的用户要根据实际情况配置
+$ docker run -u root --restart=always -d -p 8080:8080 -p 50000:50000 -v jenkins-data:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock -v /etc/localtime:/etc/localtime -v /path/to/jenkins-key:/root/.ssh --name jenkins jenkins/jenkins:lts
+```
+
+然后按提示完成 Jenkins 基础配置。
+
+ubuntu 可以在如下文件更改默认服务端口，docker 的话直接改映射就行了。
+
+```
+$vi /etc/default/jenkins
+...
+# port for HTTP connector (default 8080; disable with -1)
+HTTP_PORT=8080
+...
+
+$ sudo systemctl restart jenkins
+```
+
+如果要配置 nginx proxy 和 SSL 的话可以先参考[这篇文章](https://www.howtoing.com/how-to-configure-jenkins-with-ssl-using-an-nginx-reverse-proxy/)，笔者打算稍候尝试。
+
+# 2. 连通 Jenkins 和 GitHub
+
+这一步其实根据具体项目环境而异的，取决于你打算用什么用户来做桥梁。
+
+笔者的做法是单独在 GitHub 创建一个 Jenkins bot 账号充当机器人的角色，这个用户不仅是连接 Jenkins 和 GitHub 的桥梁，也是自动将 Jenkins 消息发布到 GitHub 的用户。以下提到的『bot user』就代指这个 GitHub 的 Jenkins bot 用户。
+
+创建完之后把 jenkins 用户的 SSH 私钥设置在 bot user 的 `Settings > SSH Keys`
+
+此外，还需要把 bot user 加到项目合作者，否则它没有权限讲 Jenkins 的消息写回 GitHub，Jenkins build 时会有如下报错：
+
+```
+FileNotFoundException means that the credentials Jenkins is using is probably wrong. Or the user account does not have write access to the repo.
+```
+
+用 jenkins 账号测试连通性
+
+```
+$ ssh -T ssh -T git@github.com
+```
+
+# 3. 开始配置 GitHub Pull Request 与 Jenkins 的集成
+
+### 获取 bot user 的 access token
+
+```
+GitHub bot user > Settings /  Developer settings  >  Personal access tokens
+```
+
+至少需要勾选 `repo` 和 `admin:repo_hook` 两组权限：
+
+![](https://l.ruby-china.com/photo/2020/6a3e01c8-a939-46a1-b8bc-a2c20d76f812.png!large)
+
+然后在 Jenkins 中配置该 bot user 的 credentials，用 secret text 填写 access token：
+
+![](https://l.ruby-china.com/photo/2020/23f5ea70-7e2f-4d1a-b4c2-4dba878f7e29.png!large)
+
+### 安装插件
+
+在 `Jenkins / Plugin Manager` 中找到并安装 『GitHub Pull Request Builder』
+
+### 配置 GitHub Plugin
+
+***接下来两步都在 `Jenkins > Configuration` 中完成。***
+
+配置 GitHub 如下：
+
+![](https://l.ruby-china.com/photo/2020/0479b946-5082-4238-ae84-ec165f8137c5.png!large)
+
+Credentials 选之前配置的 bot user，点击『Test Credentials』测试连通。
+
+### 配置 GitHub Pull Request Builder Plugin
+
+配置 Github Pull Request Builder 如下：
+
+![](https://l.ruby-china.com/photo/2020/70af32d4-e616-4b2c-ac4c-fdd69504c269.png!large)
+
+注意要配置这里的『Shared secret』，稍后会在 GitHub Webhooks 用到，这个 secret 会在每次 Webhooks post 中携带。
+
+### 配置 GitHub Webhooks
+
+在 GitHub 项目 Settings 的 Webhooks 栏目配置 webhook，注意如果是 `pull request` 请求要用 `/ghprbhook/` 地址，网上很多教程配置的是 `/github-webhook/`，它对 push 是有效的，但是笔者测下来对 pr 是无效的。
+
+![](https://l.ruby-china.com/photo/2020/d4814a94-8ea8-4eba-890f-0329745b5a2c.png!large)
+
+还有要注意配置 『Secret』，就是之前在 『GitHub Pull Request Builder Plugin』 里面设置的『Shared secret』，否则在触发 webhook post 的时候，Jenkins log 会显示如下错误信息：
+
+```
+SEVERE o.j.p.ghprb.GhprbGitHubAuth#checkSignature: Request doesn't contain a signature. Check that github has a secret that should be attached to the hook
+```
+
+最后在 『trigger events』 里选择 『Pull requests』如下：
+
+![](https://l.ruby-china.com/photo/2020/bd3aecfe-e491-449c-9f7b-314225cbfe73.png!large)
+
+# 4. 创建 job
+
+* 创建 Freestyle project
+
+![](https://l.ruby-china.com/photo/2020/b85eed30-cd7d-427d-89c2-86ca71091aa9.png!large)
+
+* 填写 GitHub project
+
+![](https://l.ruby-china.com/photo/2020/a42a0494-2db5-4c7c-8968-f2b59e1aed09.png!large)
+
+* 添加 Source Code Management
+
+这里『Credentials』不用填，因为在第二步 jenkins 已经和 bot user 绑定了（要注意对于私有项目如果 bot user 不是合作者的话这里就会提示找不到项目，不过之前已经提过无论如何都要将 bot user 加到项目合作者）。
+
+![](https://l.ruby-china.com/photo/2020/9fd3033f-f249-47ef-bd1e-3c2a2dd31e2b.png!large)
+
+* 在 Build Triggers 中添加 GitHub Pull Request Builder
+
+![](https://l.ruby-china.com/photo/2020/5dc38a00-ba54-4355-9c6f-5aa6d73bbb9c.png!large)
+
+Admin list 具体作用不详，笔者测下来可以不填。
+
+`Advanced > White list` 用来授权 GitHub 用户自动触发 Jenkins 构建，不在白名单的 GitHub 用户是不能自动触发 Jenkins job 的。但是如果勾选『Build every pull request automatically without asking (Dangerous!).』就不需要额外的白名单了，它会授权任意用户能进项目跑构建，慎用。
+
+![](https://l.ruby-china.com/photo/2020/36cc800f-1b9f-4947-a9ab-40d0eba3ec6b.png!large)
+
+如果你需要限定 PR 自动构建的 branch，则配置『Whitelist Target Branches』为需要 merge 的目标 branch 白名单。
+
+**以上参考 [Github Pull Request Builder Plugin 官方说明](https://github.com/jenkinsci/ghprb-plugin/blob/master/README.md#creating-a-job)**
+
+另外，『Trigger phrase』可以按照正则（java）来判断 GitHub PR 中的 comment 从而触发 build，不过这个 trigger 要配合 webhook 的『Issue comments』权限来使用。
+
+![](https://l.ruby-china.com/photo/2020/4bdbfd98-ae7e-4c98-b884-b36a094e37ea.png!large)
+
+比如配置：
+
+```
+Trigger phrase:             .*(re)?run tests.*
+```
+
+这样提交 comment 也会直接触发 build 了：
+
+![](https://l.ruby-china.com/photo/2020/1e41ab98-bc44-4d8f-850f-9dd4cf7c30c5.png!large)
+
+* 可以根据需要配置『Trigger Setup』，用来定制化显示在 GitHub 中自动构建的文字（也一步也可在 `Jenkins > Configuration` 中全局配置 ）：
+
+![](https://l.ruby-china.com/photo/2020/e7cf2965-7a04-4e5d-806e-a730da09f5b9.png!large)
+![](https://l.ruby-china.com/photo/2020/665c9545-4a5b-4ef3-9572-1a720760a824.png!large)
+![](https://l.ruby-china.com/photo/2020/32dffb22-a22c-4cf4-9087-ff74c0b8e5c4.png!large)
+![](https://l.ruby-china.com/photo/2020/594e0030-ee85-4dca-af6e-84769efa7ff7.png!large)
+
+具体的 Build 过程就不介绍了，测试的话创建个简单的 `shell command` 即可。
+
+# 5. 颜色输出
+
+最后补充一点，Jenkins 的 console 输出也是可以上色的，参考[Ruby China 这篇帖子](https://ruby-china.org/topics/30827)，安装 AnciColor 插件，然后在 Build Environment 配置就可以了。
+
+![color-plugin](/assets/img/posts/2020/jenkins-github/color-plugin.jpg "color plugin")
+![color-settings](/assets/img/posts/2020/jenkins-github/color-settings.jpg "color settings")
+
+---
+
+## 参考资料：
+
+* [Jenkins 官网](https://jenkins.io)
+* [Jenkins 插件中心国内镜像源发布](https://community.jenkins-zh.cn/t/jenkins/26)
+* [如何使用Nginx反向代理使用SSL配置Jenkins](https://www.howtoing.com/how-to-configure-jenkins-with-ssl-using-an-nginx-reverse-proxy/)
+* [GitHub ghprb-plugin](https://github.com/jenkinsci/ghprb-plugin)
+* [Jenkins 的输出日志也可以变得色色的](https://ruby-china.org/topics/30827)
+

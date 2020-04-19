@@ -1,0 +1,17 @@
+---
+layout: post
+title: Django 学习笔记
+date: 2019-06-21
+tags: Django
+---
+
+
+python -m venv django-venv
+source django-venv/bin/activate
+
+pip install Django
+
+
+
+
+pip install django-debug-toolbar

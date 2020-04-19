@@ -1,0 +1,33 @@
+---
+layout: post
+title: 在 Windows 上通过 docker 部署 Rails 遇到关于换行符的坑
+date: 2019-05-29
+tags: docker
+---
+
+
+
+
+[https://www.cnblogs.com/kugeliu/p/9154021.html](https://www.cnblogs.com/kugeliu/p/9154021.html)
+
+
+
+crlf 和 lf 是文本换行的不同方式：
+
+crlf: "\r\n", windows系统的换行方式
+
+lf: "\n", Linux系统的换行方式
+
+他们之间的不同经常会导致不同会导致使用不同系统的同事之间的代码冲突问题。
+
+在你使用git拉取代码的时候，git会自动将代码当中与你当前系统不同的换行方式转化成你当前系统的换行方式，从而造成这种冲突。
+
+1. 修改git全局配置，禁止git自动将lf转换成crlf,  命令： 
+
+```
+git config --global core.autocrlf false
+```
+
+2. 修改编辑器的用户配置，例如vscode
+
+"files.eol": "\n", // 文件换行使用lf方式

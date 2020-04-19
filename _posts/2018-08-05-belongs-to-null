@@ -1,0 +1,21 @@
+---
+layout: post
+title: Rails 5 中 belongs_to 为 NULL
+date: 2018-08-05
+tags: rails
+---
+
+
+
+
+belongs_to :user, optional: true
+
+class Post < ApplicationRecord
+  belongs_to :user, optional: true
+end
+
+post = Post.create(title: 'Hi')
+=> <Post id: 2, title: "Hi", user_id: nil>
+
+
+https://blog.csdn.net/wlchn/article/details/78541199

@@ -1,0 +1,30 @@
+Module A
+  extend ActiveSupport::Concern     看作是一个module的复用申明
+  include B, C, D                               之后include的就直接进了祖先链，不用重复include
+  included do
+    def self.foo                                    在 included 块里面，就可以定义将要include自己也就是A的class的方法了
+      # do …
+    end
+
+    def bar
+      # do…
+    end
+   end
+
+  Module ClassMethods                    类方法也可以直接写在 Module ClassMethods里面
+    def foo2
+      # do …
+    end
+  end
+end
+
+class B
+  include A
+end
+
+B.foo                                                然后就可以这样用了，非常方便
+B.foo2
+B.new.bar
+
+
+http://xiewenwei.github.io/blog/2014/01/13/how-activesupport-corncern-work/

@@ -1,0 +1,108 @@
+## 引言
+
+相信所有在 Mac 上使用 Docker 的人都有过这个感受，就是速度总比直接部署到 OS 上要慢一点。前几天研究了一下 [docker-sync](https://github.com/EugenMayer/docker-sync)，总结一下用法和心得，希望能帮到那些想快速无脑启用 docker-sync 的开发者。
+
+## 效果
+
+先通过一个粗略、直观的测试来看看部署 docker-sync 后的效果。
+
+选取两个页面，分别在使用 docker-sync 之前和之后各执行一次。
+
+* 页面一
+
+之前：![](https://l.ruby-china.com/photo/2019/60ab8e69-0475-4f79-9942-808fa22048ff.png!large =700x)
+
+之后：![](https://l.ruby-china.com/photo/2019/9c793a59-2c15-42a7-bd8b-5a6e5436cc1a.png!large =700x)
+
+* 页面二
+
+之前：![](https://l.ruby-china.com/photo/2019/51121a6f-be6c-4e88-9d68-672ac6c7be2d.png!large =700x)
+
+之后：![](https://l.ruby-china.com/photo/2019/14841684-2ab1-4b21-a192-98bfecaa5a0d.png!large =700x)
+
+可以看到，速度的提升效果还是很明显的，能减少大约 3-5 倍的时间。
+
+## 用法
+
+docker-sync 的用法其实很简单，只需要三步：安装 gem、配置 yml、启动。
+
+#### 1. 安装 gem
+
+```ruby
+gem install docker-sync
+```
+
+#### 2.  配置 yml
+
+在项目根目录下，创建 `docker-sync.yml`，内如如下：
+
+```
+version: '2'
+
+syncs:
+  [volume-name]:    # 自定义，将作为同步数据的 volume
+    src: './'
+```
+
+然后更改 `docker-compose.yml`，用新的 volume 替代原来的同步方式。原本你的 volume 可能类似如下：
+
+```
+volumes:  
+  - .:/app       # 将项目根目录所有文件同步到 container 中的 /app 文件夹
+```
+
+修改后如下：
+
+```
+services:
+  web:
+    ...
+    volumes:
+      - [volume-name]:/app:nocopy      
+
+
+volumes:
+  [volume-name]:          # docker-sync.yml 中自定义的名字
+    external: true
+```
+
+#### 3. 启动
+
+在项目根目录下，先启动 `docker-sync`:
+
+```
+docker-sync start
+```
+
+第一次启动会自动下载一个 eugenmayer/unison 的 docker image，以后便会直接启动一个 unison 的 container。
+
+![](https://l.ruby-china.com/photo/2019/fbc95200-8fc5-446b-8007-f9182bb8d7f3.jpeg!large)
+
+> 如果想进一步配置 docker-sync.yml，可以看[docker-sync 官网](https://docker-sync.readthedocs.io/en/latest/getting-started/configuration.html)。实用主义者看到这就可以了。如果你想进一步了解 docker-sync 的原理，它到底做了什么，请继续往下读。
+
+## 原理
+
+在 Sierra 及以下版本的 macOS 默认用的文件系统是 HFS+，High Sierra 用的是 APFS。Docker Desktop for Mac 用一个叫 [osxfs](https://docs.docker.com/docker-for-mac/osxfs/) 的共享文件系统来实现 macOS 到 Docker containers 的文件系统绑定挂载。影响一个共享文件系统性能的因素有很多方面，比如 osxfs 集成了 macOS 的 FSEvents API 到 Linux 的 inotify API 之间的映射，还有一些诸如缓存的更加复杂的维度。
+
+简而言之，由于操作系统之间不同文件系统的差异，共享文件系统的数据同步性能有着很大的不确定性。所以，docker-sync 的主要目的就是如何最大限度地弥补这个差异，优化共享文件系统的数据同步过程。先来看下图，来自 docker-sync 官方文档：
+
+![](https://l.ruby-china.com/photo/2019/9334734e-ad27-43ce-afd0-e56f8097125c.png!large)
+
+可以看到，docker-sync 主要做了以下几步：
+
+1. 用 osxfs 挂载本地目录到 sync-container 的 /host_sync
+2. 用 [Unison](http://www.cis.upenn.edu/~bcpierce/unison/) 建立一个双向同步机制，同步 /host_sync 和 /app_sync
+3. 通过 Docker Volume 的方式，将 /app_sync 挂载到 app-container 的 /app
+
+> 如果你不知道 Unison，可以看看[官网介绍](http://www.cis.upenn.edu/~bcpierce/unison/)，简单来说 Unison 就是一个文件同步工具。
+
+经过这样一层转换（新建一个 sync-container 优化数据同步），docker-sync 完成了如下几个目的：
+
+1. 因为采用 Unison，所以 /host_sync 到 /app_sync 的同步是原生速度（native-speed）的，没有了原本的因为不同文件系统带来的性能影响
+2. 通过 Docker Volume 来挂载 /app_sync 到 app-container，这一步是 hyperkit 层的，用的是 Docker LINUX-based 的原生挂载方式，所以也大大减小了对性能的影响（也是原生速度的）。
+
+其实，最关键的一步就是在 sync-container 中的 /host_sync 到 /app_sync 的同步过程，通过 Unison，osxfs 对性能的影响被从文件系统的读/写中剥离了，Unison 用远比 osxfs 快得多的技术完成了 macOS 到 Docker container 的数据同步。至于 Unison 究竟是如果做到高效跨平台文件同步的，就留给更专业的大佬解读了。
+
+### 结语
+
+如果你用 Mac，如果你又依赖 Docker 管理环境依赖，那 docker-sync 真是一个必不可少的绝佳工具。尽管需要在主机上安装一个 gem（当然还有其它几个依赖 gem），但也只需要安装一个 gem，没有任何其它系统层的依赖，也不需要跑任何多余进程，通过一个 Unison 的 Docker container，docker-sync 就完美地帮你实现了 3-5 倍的性能提升。

@@ -1,0 +1,66 @@
+
+
+
+Enumerable 和 Enumarator
+
+## map
+
+事实上，所有 Enumerable 的迭代方法都是基于 each 的。
+
+map 和 each 一样，都是遍历 collection 的每一个元素，区别是，each 不会改变元素本身（each的原理是指向元素的指针），map 可以操作元素的值并返回更改后的 collection。
+
+比如以下这个例子，就可以通过 map 方法来制造一个新的数组
+
+```
+arr2 = ['a', 'b', 'c', 'd'].each_with_index.map do |letter, idx|
+   "#{letter.capitalize} is in position #{idx+1} of the alphabet"
+end
+
+puts arr2.join("\n")
+
+#=>   Letter A is in position 1 of the alphabet
+#=>   Letter B is in position 2 of the alphabet
+#=>   Letter C is in position 3 of the alphabet
+#=>   Letter D is in position 4 of the alphabet
+```
+
+
+## inject
+
+inject 的作用是以 collection 作为输入最终输出一个值。通过一个例子来理解 inject：
+
+```
+val = [1,3,5,7].inject(0) do |total, num|
+   total += num
+end   
+puts val   #=> 16
+```
+逐个分析三个参数的意义：
+
+### 0
+它接受一个参数作为初始的返回值，之后 block 里的操作为基于这个初始值计算(如果 inject 没有参数，比如这里没有传入 0，则 total 的初始值就是 collection 的第一个元素，这个例子中即 1，同时迭代就会从第二个元素开始)
+
+### total
+inject 会将最后一轮迭代完的 total 值返回，这里接受了参数 0，则 total 的初始值为 0。 这里有个细节要注意，inject 方法会把每一次迭代的 block 的结果赋给 total，total 本身并不会自动保存。这跟方法的使用相同，只要确保 block 的最后一条语句的返回值是你需要的 total 就行了。(看以下例子应该就明白了)
+
+### num
+当前迭代的元素，和 each 用法相同。再次提醒，如果 inject 没有接受参数，则第一个元素会成为返回值的初始值，迭代从第二个元素开始。
+
+```
+data_arr = [['dog', 'Fido'], ['cat', 'Whiskers'], ['fish', 'Fluffy']]
+
+data_hash = data_arr.inject({}) do |hsh, v|
+    hsh[v[0]] = v[1]
+    hsh
+end
+```
+
+
+
+
+
+
+
+
+http://ruby.bastardsbook.com/chapters/enumerables/
+https://www.sitepoint.com/guide-ruby-collections-iii-enumerable-enumerator/

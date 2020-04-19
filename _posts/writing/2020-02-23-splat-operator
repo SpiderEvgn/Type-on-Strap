@@ -1,0 +1,24 @@
+
+
+
+
+
+
+原来： `fun("a", "b", "c")`
+
+现在： `fun(*%W(a b c))`
+
+%W(a b c)  = ["a", "b", "c"]
+
+
+
+
+
+
+`first, *rest = [1, 2, 3, 4, 5]`
+first  => 1
+rest   => [2, 3, 4, 5]
+
+
+
+https://www.honeybadger.io/blog/ruby-splat-array-manipulation-destructuring/

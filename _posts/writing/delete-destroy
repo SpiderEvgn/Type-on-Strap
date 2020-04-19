@@ -1,0 +1,52 @@
+delete(id_or_array) Link
+Deletes the row with a primary key matching the id argument, using a SQL DELETE statement, and returns the number of rows deleted. Active Record objects are not instantiated, so the object's callbacks are not executed, including any :dependent association options.
+
+You can delete multiple rows at once by passing an Array of ids.
+
+Note: Although it is often much faster than the alternative, destroy, skipping callbacks might bypass business logic in your application that ensures referential integrity or performs other essential jobs.
+
+Examples
+
+# Delete a single row
+Todo.delete(1)
+
+# Delete multiple rows
+Todo.delete([2,3,4])
+
+delete_all(conditions = nil) Link
+Deletes the records without instantiating the records first, and hence not calling the #destroy method nor invoking callbacks. This is a single SQL DELETE statement that goes straight to the database, much more efficient than destroy_all. Be careful with relations though, in particular :dependent rules defined on associations are not honored. Returns the number of rows affected.
+
+Post.where(person_id: 5).where(category: ['Something', 'Else']).delete_all
+Both calls delete the affected posts all at once with a single DELETE statement. If you need to destroy dependent associations or call your before_* or after_destroy callbacks, use the destroy_all method instead.
+
+If an invalid method is supplied, delete_all raises an ActiveRecordError:
+
+Post.limit(100).delete_all
+# => ActiveRecord::ActiveRecordError: delete_all doesn't support limit
+
+destroy(id) Link
+Destroy an object (or multiple objects) that has the given id. The object is instantiated first, therefore all callbacks and filters are fired off before the object is deleted. This method is less efficient than delete but allows cleanup methods and other actions to be run.
+
+This essentially finds the object (or multiple objects) with the given id, creates a new object from the attributes, and then calls destroy on it.
+
+Parameters
+
+id - Can be either an Integer or an Array of Integers.
+
+Examples
+
+# Destroy a single object
+Todo.destroy(1)
+
+# Destroy multiple objects
+todos = [1,2,3]
+Todo.destroy(todos)
+
+destroy_all(conditions = nil) Link
+Destroys the records by instantiating each record and calling its #destroy method. Each object's callbacks are executed (including :dependent association options). Returns the collection of objects that were destroyed; each will be frozen, to reflect that no changes should be made (since they can't be persisted).
+
+Note: Instantiation, callback execution, and deletion of each record can be time consuming when you're removing many records at once. It generates at least one SQL DELETE query per record (or possibly more, to enforce your callbacks). If you want to delete many rows quickly, without concern for their associations or callbacks, use delete_all instead.
+
+Examples
+
+Person.where(age: 0..18).destroy_all

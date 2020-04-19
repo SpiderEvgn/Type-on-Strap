@@ -1,0 +1,11 @@
+
+
+
+
+https://blog.csdn.net/scorpio3k/article/details/7884463
+
+
+tar -zcvf example.tar.gz example_folder
+
+
+tar -zxvf example.tar.gz example_folder

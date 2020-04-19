@@ -1,0 +1,72 @@
+
+
+5.2 Flash 消息
+Flash 是会话的一个特殊部分，每次请求都会清空。也就是说，其中存储的数据只能在下次请求时使用，可用来传递错误消息等。
+
+Flash 消息的获取方式和会话差不多，类似 Hash。Flash 消息是 FlashHash 实例。
+
+下面以退出登录为例。控制器可以发送一个消息，在下一次请求时显示：
+
+class LoginsController < ApplicationController
+  def destroy
+    session[:current_user_id] = nil
+    flash[:notice] = "You have successfully logged out."
+    redirect_to root_url
+  end
+end
+注意，Flash 消息还可以直接在转向中设置。可以指定 :notice、:alert 或者常规的 :flash：
+
+redirect_to root_url, notice: "You have successfully logged out."
+redirect_to root_url, alert: "You're stuck here!"
+redirect_to root_url, flash: { referral_code: 1234 }
+上例中，destroy 动作转向程序的 root_url，然后显示 Flash 消息。注意，只有下一个动作才能处理前一个动作中设置的 Flash 消息。一般都会在程序的布局中加入显示警告或提醒 Flash 消息的代码：
+
+<html>
+  <!-- <head/> -->
+  <body>
+    <% flash.each do |name, msg| -%>
+      <%= content_tag :div, msg, class: name %>
+    <% end -%>
+ 
+    <!-- more content -->
+  </body>
+</html>
+如此一來，如果动作中设置了警告或提醒消息，就会出现在布局中。
+
+Flash 不局限于警告和提醒，可以设置任何可在会话中存储的内容：
+
+<% if flash[:just_signed_up] %>
+  <p class="welcome">Welcome to our site!</p>
+<% end %>
+如果希望 Flash 消息保留到其他请求，可以使用 keep 方法：
+
+class MainController < ApplicationController
+  # Let's say this action corresponds to root_url, but you want
+  # all requests here to be redirected to UsersController#index.
+  # If an action sets the flash and redirects here, the values
+  # would normally be lost when another redirect happens, but you
+  # can use 'keep' to make it persist for another request.
+  def index
+    # Will persist all flash values.
+    flash.keep
+ 
+    # You can also use a key to keep only some kind of value.
+    # flash.keep(:notice)
+    redirect_to users_url
+  end
+end
+5.2.1 flash.now
+
+默认情况下，Flash 中的内容只在下一次请求中可用，但有时希望在同一个请求中使用。例如，create 动作没有成功保存资源时，会直接渲染 new 模板，这并不是一个新请求，但却希望希望显示一个 Flash 消息。针对这种情况，可以使用 flash.now，用法和 flash 一样：
+
+class ClientsController < ApplicationController
+  def create
+    @client = Client.new(params[:client])
+    if @client.save
+      # ...
+    else
+      flash.now[:error] = "Could not save client"
+      render action: "new"
+    end
+  end
+end

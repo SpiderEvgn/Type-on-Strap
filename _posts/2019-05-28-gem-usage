@@ -1,0 +1,30 @@
+---
+layout: post
+title: gem 的安装路径查询
+date: 2019-05-28
+tags: ruby
+---
+
+查看所有 gem 命令：（不是 gem help）
+gem help commands
+
+
+一个很有用的命令：
+
+```
+gem environment --help
+```
+
+1. 可以查看所有 gem 的配置信息，比如：
+
+```
+gem environment gempath
+```
+
+可以得到所有的 gems 查询路径，`gem list` 列出的结果就来源于这些目录
+
+
+2. 查看 gem 的安装目录：
+```
+gem environment gemdir
+```

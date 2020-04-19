@@ -1,0 +1,84 @@
+---
+layout: post
+title: Turbolinks 用法简介
+date: 2020-01-16
+tags: rails
+---
+
+
+### `data-turbolinks-track="reload"`
+`data-turbolinks-track="reload"` 用来标记当前端 bundle 有变动时重新加载整个网页。注意，Turbolinks 要求 `<script>` 必须放在 `<head>` 中，否则每次页面切换都会加载。（可以使用 defer 达到把 `<script>` 放在 `<body>` 末尾的需求）
+
+```html
+<script src="/application-abc3d5.js" data-turbolinks-track="reload"></script>
+
+```
+
+### `data-turbolinks=false`
+`data-turbolinks=false` 用来关闭当前连接的 Turbolinks，包括所有子节点，子节点可以再用 `data-turbolinks=true` 打开。
+
+```
+<a href="/" data-turbolinks="false">Disabled</a>
+
+<div data-turbolinks="false">
+  <a href="/">Disabled</a>
+
+  <a href="/" data-turbolinks="true">Enabled</a>
+</div>
+```
+
+### advance 和 replace
+
+Application Visits 有两种模式：advance 和 replace，分别表示是否将当前页加入浏览器 history。默认是 advance 即加入 history，如果要用 replace 则按如下方式：
+
+```
+<a href="/edit" data-turbolinks-action="replace">Edit</a>
+
+Turbolinks.visit("/edit", { action: "replace" })
+```
+
+### 缓存
+
+注意：Turbolinks 会用 `cloneNode(true)` 方法把当前页保存到缓存，同时会丢失所有监听事件和关联数据
+
+在页面的 `<head>` 中增加 `cache-control` 的 `<meta>` 来控制缓存，`no-preview` 表示在 application visits 的时候不显示预览页面，`no-cache` 表示在所有情况下关闭缓存。
+
+```
+<head>
+  ...
+  <meta name="turbolinks-cache-control" content="no-preview>
+  ...
+  <meta name="turbolinks-cache-control" content="no-cache">
+</head>
+```
+
+### Turbolinks 事件
+
+turbolinks:[event]
+
+event:
+load
+before-cache
+
+### 预览
+
+当 Turbolinks 显示预览页面的时候会在 `<html>` 中加上 `data-turbolinks-preview` 的标签，可以用如下方式探知：
+
+```
+if (document.documentElement.hasAttribute("data-turbolinks-preview")) {
+  // Turbolinks is displaying a preview
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+

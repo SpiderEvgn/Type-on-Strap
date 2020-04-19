@@ -1,0 +1,37 @@
+---
+layout: post
+title: Sublime 常用 Package
+date: 2019-11-21
+tags: sublime
+---
+
+### 
+
+显然，在这种情况下直接用 html 的语法就简单的多，也便于理解。
+
+
+### 推荐一个 html 语法的插件： Emmet
+
+ Emmet 它能够快速高效的帮助开发者运用繁杂的  html 语法，可以去它的官网查看具体功能：
+http://emmet.io (http://emmet.io/) 
+
+sublime text 安装 Emmet 插件：
+
+“command + shift + p” → “Package Control: Install Package”  → “Emmet ( Emmet for Sublime Text )”
+举一个例子：
+输入： `ul#nav>li.itemS*4>a{Item $}`
+按tab键，自动生成如下 html 代码，cool～!
+[Image: Image.jpg]
+
+### 再推荐一个 ERB 语法的插件： ERB Snippets 
+
+ERB Snippets 能够快速打印 erb 的语法，可以去 github 上看具体用法：
+https://github.com/matthewrobertson/ERB-Sublime-Snippets
+sublime text 安装 ERB Snippets 插件：
+“command + shift + p” → “Package Control: Install Package”  → “ERB Snippets ( matthewrobertson  )”
+同样举一个例子：
+输入：pe
+按 tab 键，自动生成：<%=  %>， 光标停留在”=”后面，不错。
+
+
+https://phroadcast.blogspot.com/2017/03/sublime-text-3-react.html#Support-JSX-Syntax-Highlight
