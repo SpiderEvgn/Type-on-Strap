@@ -1,7 +1,6 @@
 ---
 layout: post
 title: Color Post
-tags: [Test, Color, Markdown]
 color: brown
 author: sylhare
 excerpt_separator: <!--more-->

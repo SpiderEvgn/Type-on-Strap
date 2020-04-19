@@ -1,7 +1,6 @@
 ---
 layout: post
 title: Blogging with title
-tags: [Test, Ipsum, Markdown, Portfolio]
 ---
 
 # I am a BIG title
