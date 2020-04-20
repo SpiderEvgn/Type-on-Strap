@@ -7,7 +7,7 @@ tags: rails
 
 ### 0. 引言
 
-在 上一篇『Rails 在 Docker container 测试找不到浏览器』中讲了如何避免 Rails 默认的 `:rack_test` 驱动依赖浏览器，但是毕竟有需要浏览器模拟的前端测试，在 docker 中是如何实现的呢？
+在 上一篇 《[Rails 在 Docker container 测试找不到浏览器]({% post_url 2020/2020-02-14-rails-test-in-docker-no-browser %})》中讲了如何避免 Rails 默认的 `:rack_test` 驱动依赖浏览器，但是毕竟有需要浏览器模拟的前端测试，在 docker 中是如何实现的呢？
 
 ### 1. 下载 selenium chrome 镜像
 

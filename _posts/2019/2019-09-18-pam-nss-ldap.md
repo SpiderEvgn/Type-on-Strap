@@ -1,15 +1,14 @@
 ---
 layout: post
 title: 在 CentOS 搭建 LDAP 服务器（一） - Linux 认证框架 与 LDAP
-date: 2019-09-18
 tags: centos
 ---
 
-### 引言
+### 0. 引言
 
 本文将分三篇来详细介绍在 centos 7 上搭建 LDAP 服务器（使用开源的 OpenLDAP 实现）的过程，第一篇介绍什么是 OpenLDAP，以及 Linux 集成 OpenLDAP 的原理；第二篇详细介绍 OpenLDAP 的配置，将包含大量具体的操作命令；第三篇介绍如何使用自签证书配置 TLS 加密，但其实第三篇将着重于介绍 SSL 和 OpenSSL 自身的技术，所以也可看成独立的关于加密和证书的文章。
 
-### Linux 的用户验证：PAM 与 NSS
+### 1. Linux 的用户验证：PAM 与 NSS
 
 在现代 Linux 系统上，用户的授权系统是通过 [PAM（Pluggable Authentication Module）](https://www.ibm.com/developerworks/cn/linux/l-cn-pam/index.html)实现的，PAM 最初应用在 Solaris 上，现在已成为了标准的 Linux 认证框架。PAM 提供了一个 API 用来映射认证请求到各种不同的服务（这里就包含了 LDAP 提供的认证服务），可以通过 PAM 配置文件来管理这种映射，通常在 `/etc/pam.d/` 目录下，每个配置文件以不同的应用命名，比如 login、sshd、sudo 等。以下是 `/etc/pam.d/system-auth` 的一个片段：
 
@@ -30,7 +29,7 @@ account     required      pam_permit.so
 
 [NSS（Name Service Switch）](https://docs.oracle.com/cd/E19455-01/806-1387/6jam6926d/index.html)是一个通用的名称解析框架，包装了和各种存储的交互模块并提供了一个通用的 API 接口，这个概念有点像 web 框架中的数据库接口，开发者不必再关心底层具体是哪种数据库实现，只要简单地应用框架提供的接口就行了。存储的解析库可以是文件（/etc/passwd），MySQL，当然还包括本文的主角 LDAP。NSS 的配置文件是 `/etc/nsswitch.conf`，在 OpenLDAP 的配置中会用到。
 
-### OpenLDAP，LDAP 与 X.500
+### 2. OpenLDAP，LDAP 与 X.500
 
 先认识一个名词：目录服务。目录服务是一种特殊的数据库，它专门用在查询多、修改少的场景。
 
@@ -52,7 +51,7 @@ LDAP（Lightweight Directory Access Protocal）是在 [RFC1487](https://tools.ie
 
 ![intro_dctree](/assets/img/posts/2019/openldap-config/intro_dctree.png "Intro Dctree")
 
-### Linux 与 LDAP 的集成 -- nss-pam-ldapd
+### 3. Linux 与 LDAP 的集成 -- nss-pam-ldapd
 
 OpenLDAP 是 C/S 架构的，在服务器上要安装 openldap-servers 软件包，[slapd](http://www.openldap.org/software/man.cgi?query=slapd)就是服务进程，配置文件都在 `/etc/openldap/slapd.d` 目录中，而 OpenLDAP 的数据文件在 `/var/lib/ldap` 目录中，在第一次启动 slapd 服务后会生成数据库文件。
 
@@ -60,7 +59,7 @@ OpenLDAP 是 C/S 架构的，在服务器上要安装 openldap-servers 软件包
 
 与 Linux 的用户系统集成有两种途径，一种是通过 nss-pam-ldapd 直接与 ldap 通信，一种是通过 SSSD 进行转发。
 
-1. nss-pam-ldapd 
+* #### 1.1 nss-pam-ldapd 
 
   这是一个在客户端上安装的软件包，用来让 PAM 和 NSS 与 LDAP server 交互的模块，它会起一个 nslcd 的服务，并提供相关 so 文件供 PAM 和 NSS 使用。如下图，如果未安装 nss-pam-ldapd 的话（进行 authconfig）会报错：
 
@@ -68,7 +67,7 @@ OpenLDAP 是 C/S 架构的，在服务器上要安装 openldap-servers 软件包
 
   概括一下，openldap-clients 是用来和 server 交互的操作数据的，slapd 是 openldap-servers 的服务进程，client 需要配置 PAM 和 NSS 启用 LDAP 作为数据源，然后通过 nslcd 进程访问 LDAP server 达到集中管理数据的目的。
 
-2. [SSSD - System Security Services Daemon](https://docs.pagure.org/SSSD.sssd/)
+* #### 1.2 [SSSD - System Security Services Daemon](https://docs.pagure.org/SSSD.sssd/)
 
   > 官网介绍：
   > SSSD is a system daemon. Its primary function is to provide access to local or remote identity and authentication resources through a common framework that can provide caching and offline support to the system. It provides several interfaces, including NSS and PAM modules or a D-Bus interface.

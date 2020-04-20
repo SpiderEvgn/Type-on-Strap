@@ -1,8 +1,7 @@
 ---
 layout: post
 title: Letsencrypt 快速部署 SSL 证书（ubuntu 16.04）
-date: 2018-02-12
-tags: ali
+tags: [nginx, ssl, ali]
 ---
 
 > 很早就想写一篇关于 letsencrypt 的介绍了，既实用又免费的 SSL 证书，部署还特别方便，虽然每张证书都只有三个月有效期，但有自动 renew 功能，绝对放心使用。正巧同事 Jonas 刚刚解决了一个关于 renew 的一个坑然后写了一篇 guide，我就直接拿过来参考并翻译了这部分。感谢 Jonas，这是[原文链接](https://gist.github.com/jonasva/be3f89f6a06f80692920b87afbb602bc)。
@@ -53,8 +52,8 @@ server {
 
 改变 nginx 配置文件后别忘了要 reload：
 ```
-$ sudo /etc/init.d/nginx configtest
-$ sudo /etc/init.d/nginx reload
+$ sudo nginx -t
+$ sudo nginx -s reload
 ```
 
 环境配置完了，接下来就可以通过 certbot 签发证书了：
@@ -147,14 +146,17 @@ Found the following certs:
 * Safari
 
 进入网页后，在地址栏 url 的左面有一个灰色小锁的 icon，点击它就能看到证书的详情了
-![safari](/assets/img/posts/2018/ssl/safari.png "Safari SSL")
+![safari](/assets/img/posts/2018/ssl/safari.jpg "Safari SSL")
 
 * Chrome
 
 进入网页后，在地址栏 url 的左面有一个绿色的小锁加上‘Secure’字样（对比没有 SSL 的网站是一个圈加感叹号的 icon）
-![chrome-1](/assets/img/posts/2018/ssl/chrome-1.png "Chrome SSL 1")
+
+![chrome-1](/assets/img/posts/2018/ssl/chrome-1.jpg "Chrome SSL 1")
+
 点击它然后在弹出下拉框中点击 ‘Valid’，就能看到证书的详情了
-![chrome-2](/assets/img/posts/2018/ssl/chrome-2.png "Chrome SSL 2")
+
+![chrome-2](/assets/img/posts/2018/ssl/chrome-2.jpg "Chrome SSL 2")
 
 ### 配置证书的 auto renewal（翻译自[原文链接](https://gist.github.com/jonasva/be3f89f6a06f80692920b87afbb602bc)）
 
@@ -199,19 +201,19 @@ sudo certbot -q renew --max-log-backups 200 --post-hook "/etc/init.d/nginx reloa
 
 * #### 进入控制台，选择 CDN -> 域名管理
 
-![cdn-panel](/assets/img/posts/2018/ssl/cdn-panel.png "CDN panel")
+![cdn-panel](/assets/img/posts/2018/ssl/cdn-panel.jpg "CDN panel")
 
 * #### 查看主页面列表，“HTTPS” 状态栏显示了该 CDN 配置是否成功启用了 HTTPS
 
-![cdn-panel](/assets/img/posts/2018/ssl/status.png "status")
+![cdn-panel](/assets/img/posts/2018/ssl/status.jpg "status")
 
 * #### 对需要开启 HTTPS 服务的 CDN 项，单击右侧的 “配置” 按钮，进入配置页面，并滑动到 HTTPS 配置处
 
-![cdn-panel](/assets/img/posts/2018/ssl/https-config.png "HTTPS config")
+![cdn-panel](/assets/img/posts/2018/ssl/https-config.jpg "HTTPS config")
 
 * #### 单击 “修改配置” 按钮，在弹出框中选中 “开启” 并单击 “选择证书” 下拉框选中 “自定义上传”（右侧 “云盾证书服务” 可以进入阿里的证书管理，包括你之后将要上传的 letsencrypt 证书也会出现在这里，如果你直接在阿里购买证书，这里也可以直接选择。具体操作非常简单，这里就不赘述了）
 
-![cdn-panel](/assets/img/posts/2018/ssl/https-upload.png "HTTPS upload")
+![cdn-panel](/assets/img/posts/2018/ssl/https-upload.jpg "HTTPS upload")
 
 * #### 回到服务器，复制之前新签发的证书内容，可以单击阿里提供的 “pem编码参考样例” 查看样例
 
@@ -226,7 +228,7 @@ sudo cat ssl_certificate_key /etc/letsencrypt/live/example.com/privkey.pem
 
 * #### 单击 “确定”，回到配置页，“HTTPS设置” 已经完成了
 
-![cdn-panel](/assets/img/posts/2018/ssl/https-upload-ok.png "HTTPS upload finished")
+![cdn-panel](/assets/img/posts/2018/ssl/https-upload-ok.jpg "HTTPS upload finished")
 
 * #### 最后回到外层 CDN 列表 HTTPS 列显示 “已开启”
 

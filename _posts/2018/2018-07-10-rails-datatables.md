@@ -1,11 +1,10 @@
 ---
 layout: post
 title: 在 Rails 中集成 DataTable
-date: 2018-07-10
 tags: rails
 ---
 
-> 之前写过一篇关于如何在 Laravel 中的 DataTable 添加一个导出按钮的文章《[在 Laravel 上实现 DataTable 的 Excel 导出按钮]({% post_url 2018-01-25-datatable-export-button %})》，其实这篇文章也讲解了 DataTable 在 Laravel 的使用和配置。今天再介绍一下如何在 Rails 中使用 DataTable。
+> 之前写过一篇关于如何在 Laravel 中的 DataTable 添加一个导出按钮的文章《[在 Laravel 上实现 DataTable 的 Excel 导出按钮]({% post_url 2018/2018-01-25-datatable-export-button %})》，其实这篇文章也讲解了 DataTable 在 Laravel 的使用和配置。今天再介绍一下如何在 Rails 中使用 DataTable。
 
 ### 安装 Gem 包
 

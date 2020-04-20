@@ -1,7 +1,6 @@
 ---
 layout: post
 title: 在 Laravel 上实现 DataTable 的 Excel 导出按钮
-date: 2018-01-25
 tags: laravel
 ---
 
