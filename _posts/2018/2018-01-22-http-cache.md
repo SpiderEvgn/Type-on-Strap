@@ -1,7 +1,6 @@
 ---
 layout: post
 title: HTTP 请求中的 caching
-date: 2018-01-22
 tags: http
 ---
 

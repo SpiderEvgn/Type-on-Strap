@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Letsencrypt 快速部署 SSL 证书（ubuntu 16.04）
-tags: [nginx, ssl, ali]
+tags: [nginx, ssl, aliyun]
 ---
 
 > 很早就想写一篇关于 letsencrypt 的介绍了，既实用又免费的 SSL 证书，部署还特别方便，虽然每张证书都只有三个月有效期，但有自动 renew 功能，绝对放心使用。正巧同事 Jonas 刚刚解决了一个关于 renew 的一个坑然后写了一篇 guide，我就直接拿过来参考并翻译了这部分。感谢 Jonas，这是[原文链接](https://gist.github.com/jonasva/be3f89f6a06f80692920b87afbb602bc)。

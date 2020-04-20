@@ -13,14 +13,14 @@ tags: rails
 
 首先当然是 `git pull` 把项目拉下来，至于 gem 依赖的话就看 image 是怎么做的了。笔者的 gem 是放在本地的，也就是说 image 是不包含 gem 包的，所以在部署的时候需要在服务器重新安装：
 
-```
+```bash
 $ docker-compose run --rm web gem install bundler
 $ docker-compose run --rm web bundle install
 ```
 
 代码拉下来之后，通常需要创建数据库文件：
 
-```
+```bash
 $ cp config/database.yml.example config/database.yml
 ```
 
@@ -30,13 +30,13 @@ $ cp config/database.yml.example config/database.yml
 
 ### 2. 前端编译
 
-```
+```bash
 $ docker-compose run --rm web rails assets:precompile
 ```
 
 ### 3. 配置 Nginx
 
-```
+```bash
 vi /etc/nginx/sites-available/[project-name]
 
 server {
@@ -73,7 +73,7 @@ ln -s /etc/nginx/sites-available/[project-name] [project-name]
 
 ### 4. 启动项目和 Nginx
 
-```
+```bash
 $ cd /var/www/[project-name]
 $ docker-compose up -d
 $ docker-compose exec web rails db:prepare

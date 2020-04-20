@@ -1,7 +1,6 @@
 ---
 layout: post
 title: nginx proxy 利用 X-Forwarded-Proto 传递 https 请求
-date: 2018-05-17
 tags: nginx laravel
 ---
 

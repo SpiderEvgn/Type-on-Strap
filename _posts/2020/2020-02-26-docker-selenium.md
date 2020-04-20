@@ -44,7 +44,7 @@ services:
 
 启用 JS 测试很简单，如下加入 `js: true` 即可：
 
-```
+```rb
 RSpec.feature "test", type: :feature do     # 也可以加在外层
 
   scenario "test", js: true do
@@ -52,7 +52,7 @@ RSpec.feature "test", type: :feature do     # 也可以加在外层
 
 然后就是最关键的一步配置，可以直接写到 `rails_helper.rb`，不过我更推荐去掉 `rails_helper.rb` 中 `Dir[Rails.root.join('spec', 'support', '**', '*.rb')].each { |f| require f }` 的注释，然后在 `spec/support/` 中新建配置文件：
 
-```
+```rb
 Capybara.javascript_driver = :selenium_remote_chrome          # 自定义 driver
 Capybara.register_driver :selenium_remote_chrome do |app|
   Capybara::Selenium::Driver.new(

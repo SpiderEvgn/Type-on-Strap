@@ -14,7 +14,7 @@ tags: jenkins
 
 * ubuntu
 
-```
+```bash
 $ wget -q -O - https://pkg.jenkins.io/debian-stable/jenkins.io.key | sudo apt-key add -
 $ echo deb https://pkg.jenkins.io/debian-stable binary/ | sudo tee /etc/apt/sources.list.d/jenkins.list
 $ sudo apt-get update
@@ -27,7 +27,7 @@ $ usermod -aG docker jenkins
 
 * docker
 
-```
+```bash
 #  注：笔者是在 ubuntu 上直接安装 Jenkins，所以 docker 上的用户要根据实际情况配置
 $ docker run -u root --restart=always -d -p 8080:8080 -p 50000:50000 -v jenkins-data:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock -v /etc/localtime:/etc/localtime -v /path/to/jenkins-key:/root/.ssh --name jenkins jenkins/jenkins:lts
 ```
@@ -36,7 +36,7 @@ $ docker run -u root --restart=always -d -p 8080:8080 -p 50000:50000 -v jenkins-
 
 ubuntu 可以在如下文件更改默认服务端口，docker 的话直接改映射就行了。
 
-```
+```bash
 $vi /etc/default/jenkins
 ...
 # port for HTTP connector (default 8080; disable with -1)
@@ -64,7 +64,7 @@ FileNotFoundException means that the credentials Jenkins is using is probably wr
 
 用 jenkins 账号测试连通性
 
-```
+```bash
 $ ssh -T ssh -T git@github.com
 ```
 

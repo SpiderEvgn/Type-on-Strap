@@ -11,7 +11,7 @@ tags: rails
 
 ### 1. 直接看代码
 
-```ruby
+```rb
 # 定义了一个颜色数组用来随机生成头像背景色
 DEFAULT_AVATAR_COLORS = %w(
   #007bff
