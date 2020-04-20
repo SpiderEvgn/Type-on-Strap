@@ -56,7 +56,7 @@ $ sudo systemctl restart jenkins
 
 创建完之后把 jenkins 用户的 SSH 私钥设置在 bot user 的 `Settings > SSH Keys`
 
-此外，还需要把 bot user 加到项目合作者，否则它没有权限讲 Jenkins 的消息写回 GitHub，Jenkins build 时会有如下报错：
+此外，还需要把 bot user 加到项目合作者，否则它没有权限将 Jenkins 的消息写回 GitHub，Jenkins build 时会有如下报错：
 
 ```
 FileNotFoundException means that the credentials Jenkins is using is probably wrong. Or the user account does not have write access to the repo.
