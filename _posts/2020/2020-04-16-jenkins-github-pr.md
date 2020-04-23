@@ -104,6 +104,8 @@ Credentials 选之前配置的 bot user，点击『Test Credentials』测试连�
 
 ![pr-plugin-config](/assets/img/posts/2020/jenkins-github/pr-plugin-config.jpg "pr plugin config")
 
+这里的 Credentials 就是在 GitHub 同步 Jenkins 状态的用户。
+
 注意要配置这里的『Shared secret』，稍后会在 GitHub Webhooks 用到，这个 secret 会在每次 Webhooks post 中携带。
 
 - #### 配置 GitHub Webhooks
@@ -189,5 +191,6 @@ Trigger phrase:             .*(re)?run tests.*
 * [Jenkins 插件中心国内镜像源发布](https://community.jenkins-zh.cn/t/jenkins/26)
 * [如何使用Nginx反向代理使用SSL配置Jenkins](https://www.howtoing.com/how-to-configure-jenkins-with-ssl-using-an-nginx-reverse-proxy/)
 * [GitHub ghprb-plugin](https://github.com/jenkinsci/ghprb-plugin)
+* [Ruby on Rails Continuous Integration with Jenkins and Docker Compose](https://medium.com/wolox/ruby-on-rails-continuous-integration-with-jenkins-and-docker-compose-8dfd24c3df57)
 * [Jenkins 的输出日志也可以变得色色的](https://ruby-china.org/topics/30827)
 
