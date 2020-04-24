@@ -1,12 +1,14 @@
 ---
 layout: post
-title: Jenkins 集成 GitHub Pull Request
+title: Jenkins 集成 GitHub（上）—— Pull Request
 tags: jenkins
 ---
 
 ### 0. 引言
 
-网上有不少集成 Jenkins 和 GitHub 的帖子，但是笔者在实践还是踩了不少坑，所以就重新总结一下。
+网上已经有很多 Jenkins 集成 GitHub 的帖子，但是笔者在实践还是踩了不少坑，所以就重新总结一下。
+
+本文分为上下两部分，上篇介绍 pr，下篇介绍 push。
 
 ### 1. 安装 Jenkins
 
