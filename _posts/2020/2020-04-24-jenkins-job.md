@@ -22,7 +22,7 @@ tags: [rails, docker, jenkins]
 
 > 关于 Jenkins 集成 GitHub 笔者已经写过两篇文章：
 > * [『Jenkins 集成 GitHub（上）—— Pull Request』]({% post_url 2020/2020-04-17-jenkins-github-pr %}) 
-> * [『Jenkins 集成 GitHub（下）—— Push』]({% post_url 2020/2020-04-17-jenkins-github-pr %}) 
+> * [『Jenkins 集成 GitHub（下）—— Push』]({% post_url 2020/2020-04-18-jenkins-github-push %}) 
 
 ### 2. Pull Request 的构建（自动化测试）
 
