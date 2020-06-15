@@ -12,15 +12,15 @@ tags: [react]
 
 有如下属性和方法：
 
-* length - (number) history stack 中的条目数量
-* action - (string) 当前动作（PUSH, REPLACE, POP）
-* location - (object) 当前 location，包含属性：pathname、search、hash、state
-* push(path, [state]) - (function) push 新的条目到 history stack
+* length&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- (number) history stack 中的条目数量
+* action&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - (string) 当前动作（PUSH, REPLACE, POP）
+* location&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - (object) 当前 location，包含属性：pathname、search、hash、state
+* push(path, [state])&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - (function) push 新的条目到 history stack
 * replace(path, [state]) - (function) replace 当前的条目
-* go(n) - (function) 在 history stack 中移动 n 个条目
-* goBack() - (function) 等于 go(-1)
-* goForward() - (function) 等于 go(1)
-* block(prompt) - (function) 组织跳转
+* go(n)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - (function) 在 history stack 中移动 n 个条目
+* goBack()&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - (function) 等于 go(-1)
+* goForward()&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - (function) 等于 go(1)
+* block(prompt)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - (function) 组织跳转
 
 *注：不要使用 history.location 因为 history 是易变的（mutable）*
 
