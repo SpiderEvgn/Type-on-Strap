@@ -22,7 +22,7 @@ tags: [react]
 * goForward() - (function) 等于 go(1)
 * block(prompt) - (function) 组织跳转
 
-不要使用 history.location 因为 history 是易变的（mutable）
+*注：不要使用 history.location 因为 history 是易变的（mutable）*
 
 ### 2. location
 
@@ -51,7 +51,7 @@ location 可以传入两个组件：Route 和 Switch，用来替换当前页面�
 * path - (string) 用来匹配的 path 模式内容，对嵌套 `<Route>` 很有用
 * url - (string) 匹配的 URL 部分，对嵌套 `<Link>` 很有用
 
-***[null match](https://reacttraining.com/react-router/web/api/match/null-matches）的机制还不理解***
+match 可以为 null，在使用 `<Route children>` 的方式匹配的时候，即使 route 不匹配 children function 也会执行，而此时 match 的取值就是 null。
 
 ## 二、Hooks
 
