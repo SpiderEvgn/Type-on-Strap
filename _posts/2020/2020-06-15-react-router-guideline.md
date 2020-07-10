@@ -22,7 +22,7 @@ tags: [react]
 * goForward()&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - (function) 等于 go(1)
 * block(prompt)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - (function) 组织跳转
 
-*注：不要使用 history.location 因为 history 是易变的（mutable）*
+*注：不要使用 history.location 因为 history 是可变的（mutable）*
 
 ### 2. location
 
