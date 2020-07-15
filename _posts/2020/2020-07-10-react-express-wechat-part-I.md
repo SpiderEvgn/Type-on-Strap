@@ -1,12 +1,12 @@
 ---
 layout: post
 title: React + Express 搭起简易微信登录框架（一）
-tags: [react, wechat]
+tags: [react]
 ---
 
 ## 0. 引言
 
-刚开始学习 [React](https://reactjs.org/)，做了一个简单的 Demo 实现微信一键登录。
+刚开始学习 [React](https://reactjs.org/)，做了一个简单的 Demo 实现微信一键登录（手机端通过微信客户端登录）。
 
 因为微信接口必须写在后台（appid, secret 不能暴露到客户端），所以用 [Express](http://expressjs.com/) 简单搭了一个服务端，页面跳转用 [react-router](https://reactrouter.com/)，状态管理使用 v16.8 推出的 Hooks API（useReducer 和 useContext）。
 
@@ -14,9 +14,11 @@ tags: [react, wechat]
 
 虽然是个小 Demo，但是写起来东西还是挺多的，于是分开几篇逐步介绍几块内容。本文主要是关于项目初始化和登录状态的管理与跳转。
 
+***[Demo 的完整代码在 [这里](https://github.com/SpiderEvgn/react-wechat-login-demo)]***
+
 ## 1. 初始化项目
 
-直接使用官方工具 [create-react-app](https://create-react-app.dev/docs/getting-started) 创建项目，然后安装一下依赖包：
+直接使用官方工具 [create-react-app](https://create-react-app.dev/docs/getting-started) 创建项目，然后安装以下依赖包：
 
 * react-router-dom
 * node-sass
@@ -39,7 +41,7 @@ tags: [react, wechat]
 
 ```js
 import LoginPage from '../../pages/Login'
---->
+// 简化为 --->
 import LoginPage from 'pages/Login'
 ```
 
@@ -71,7 +73,7 @@ project
 |-- app_server.js
 ```
 
-我习惯于集中管理样式文件，所以把所有统一放到 stylesheets 文件夹下，不过本文主要记录功能实现，就不罗列样式代码了。
+我习惯于集中管理样式文件，所以把所有样式统一放到 stylesheets 文件夹下，不过文章主要记录功能实现，就不罗列样式代码了，可自行前往源代码查看（很简单的例子而已）。
 
 接下来看具体实现步骤，分别介绍以上文件的内容及作用。
 
@@ -106,22 +108,7 @@ export const reducer = (state, action) => {
 
 然后只需导入该文件，通过 `<AppContext.Provider value=>` 将状态穿透到所有内部组件即可。
 
-任何内部组件要拿到 state 只需像这样申明：
-
-```js
-import { AppContext } from 'context-manager.js'
-const { state } = useContext(AppContext)
-```
-
-后面会看到具体用法。
-
-## 3. 登录跳转
-
-这个 Demo 的主要功能是用户登录，它的前端界面的核心功能是根据用户身份（状态）显示不同页面，合法则显示受保护页面，不合法则显示登录页。
-
-在这个登录跳转的功能上我参照了 [react-router 的官方例子](https://reactrouter.com/web/example/auth-workflow)，用一个自定义路由组件（用于验证）把受保护页面路由包裹起来。
-
-下面是 App.js:
+于是改写 App.js 如下:
 
 ```js
 import React, { useReducer } from 'react'
@@ -145,7 +132,22 @@ function App() {
 export default App;
 ```
 
-下一步就是 AppLayout 组件，包裹了所有的页面：
+任何内部组件要拿到 state 只需像这样申明：
+
+```js
+import { AppContext } from 'context-manager.js'
+const { state } = useContext(AppContext)
+```
+
+后面会看到具体用法。
+
+## 3. 登录跳转
+
+这个 Demo 的主要功能是用户登录，它的前端界面的核心功能是根据用户身份（状态）显示不同页面，合法则显示受保护页面，不合法则显示登录页。
+
+在这个登录跳转的功能上我参照了 [react-router 的官方例子](https://reactrouter.com/web/example/auth-workflow)，用一个自定义路由组件（用于验证）把受保护页面路由包裹起来。
+
+最外层是 AppLayout 组件，包裹了所有的页面：
 
 ```js
 import React from 'react';
@@ -153,8 +155,6 @@ import { Route, Switch } from 'react-router-dom'
 
 import AuthorizedRoute from 'route/AuthorizedRoute'
 import LoginPage from 'pages/Login'
-
-const { Content, Footer } = Layout
 
 const AppLayout = () => {
 
@@ -183,13 +183,12 @@ export default AppLayout
 
 ```js
 import React, { useContext } from 'react';
-import { Route, Redirect, useLocation } from 'react-router-dom'
+import { Route, Redirect } from 'react-router-dom'
 import { AppContext } from 'context-manager.js'      // 状态引用步骤 1
 
 const AuthorizedRoute = ({ children, ...rest }) => {
 
   const { state } = useContext(AppContext)     // 状态引用步骤 2
-  const location = useLocation()
 
   return (
     <Route
@@ -244,9 +243,13 @@ const LoginPage = () => {
 export default LoginPage
 ```
 
-这里简单地实现了登录功能，点击『微信一键登录』按钮触发在 `context-manager.js` 中定义好的 dispatch 方法，更改状态 isLogin 为 true，同时触发 Login 组件的 render，然后 Redirect 到访问页面，登录成功。
+## 4. 总结
 
-下一步就是改写登录的业务逻辑，即实现微信登录。但是，如引言所说，微信登录接口不能放在客户端调用，我们不能做一个纯前端应用然后让用户在微信端直接一键登录，因为这样会暴露敏感数据。所以在实现微信登录之前，下一篇会先介绍如何搭建一个最简化的 Express 后台。
+这里简单地实现了登录功能，点击『微信一键登录』按钮触发在 `context-manager.js` 中定义好的 dispatch 方法，更新状态 isLogin 为 true，随即触发 Login 组件的 render，然后 Redirect 到访问页面，登录成功。
+
+比如，访问 `/` 和 `/about` 都会自动跳转到 `/login` 页面，点击『微信一键登录』按钮后，就会跳转到 `/` 或 `/about` 受保护页面。
+
+下一步就是改写登录的业务逻辑，实现微信登录。但是，如引言所说，微信登录接口不能放在客户端调用，我们不能做一个纯前端应用然后让用户在微信端直接一键登录，因为这样会暴露敏感数据。所以在实现微信登录之前，下一篇会先介绍如何搭建一个最简化的 Express 后台。
 
 ---
 
