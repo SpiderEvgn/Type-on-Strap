@@ -74,7 +74,7 @@ docker run -d --restart=always -v dbdata:/var/lib/postgresql/data --name [db-nam
 
 然后在发布应用的生产镜像时连接到这个数据库容器就可以了，这样数据库就持久化在应用服务器上了。此外，对于文件存储，如果用的也是本地 storage，还需要把项目的 storage 文件夹挂载到服务器上。
 
-最后，为了让 nginx 能够访问 public，需要在生产容器启动后把 public 文件夹拷贝到服务器上。(过 nginx 也采用容器化的话，可以将生产镜像单独起一个 data_volume，然后 app_prod 和 nginx 都访问这个 volume)
+最后，为了让 nginx 能够访问 public，需要在生产容器启动后把 public 文件夹拷贝到服务器上。(如果 nginx 也采用容器化的话，可以将生产镜像单独起一个 data_volume，然后 app_prod 和 nginx 都访问这个 volume)
 
 ```bash
 #!/bin/bash +x

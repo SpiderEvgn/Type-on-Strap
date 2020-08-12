@@ -42,7 +42,7 @@ tags: jenkins
 There are no credentials with admin access to manage hooks on GitHubRepositoryName[host=github.com,username=owner,repository=name]
 ```
 
-所以，不能按照我在上篇说的把 GitHub plugin 设置成 bot user，下图中的 Credentials 必须换成项目的所有者。
+所以，不能按照我在上篇说的把 GitHub plugin 设置成 bot user，下图中的 Credentials 必须换成项目的所有者（access_token）。
 
 ![gh-plugin-config](/assets/img/posts/2020/jenkins-github/gh-plugin-config.jpg "gh plugin config")
 

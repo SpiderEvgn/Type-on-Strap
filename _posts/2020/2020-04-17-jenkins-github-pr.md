@@ -67,7 +67,7 @@ FileNotFoundException means that the credentials Jenkins is using is probably wr
 用 jenkins 账号测试连通性
 
 ```bash
-$ ssh -T ssh -T git@github.com
+$ ssh -T git@github.com
 ```
 
 ### 3. 开始配置 GitHub Pull Request 与 Jenkins 的集成
@@ -112,7 +112,7 @@ Credentials 选之前配置的 bot user，点击『Test Credentials』测试连�
 
 - #### 配置 GitHub Webhooks
 
-在 GitHub 项目 Settings 的 Webhooks 栏目配置 webhook，注意如果是 `pull request` 请求要用 `/ghprbhook/` 地址，网上很多教程配置的是 `/github-webhook/`，它对 push 是有效的，但是笔者测下来对 pr 是无效的。
+在 GitHub 项目 Settings 的 Webhooks 栏目配置 webhook，注意如果是 `pull request` 请求要用 `/ghprbhook/` 地址(注意最后的 '/')，网上很多教程配置的是 `/github-webhook/`，它对 push 是有效的，但是笔者测下来对 pr 是无效的。
 
 ![webhook-config](/assets/img/posts/2020/jenkins-github/webhook-config.jpg "webhook config")
 
@@ -158,7 +158,7 @@ Admin list 具体作用不详，笔者测下来可以不填。
 
 另外，『Trigger phrase』可以按照正则（java）来判断 GitHub PR 中的 comment 从而触发 build，不过这个 trigger 要配合 webhook 的『Issue comments』权限来使用。
 
-![webhook-pr](/assets/img/posts/2020/jenkins-github/webhook-pr.jpg "webhook pr")
+![webhook-ic](/assets/img/posts/2020/jenkins-github/webhook-ic.jpg "webhook ic")
 
 比如配置：
 
